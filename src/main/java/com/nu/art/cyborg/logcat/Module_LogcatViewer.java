@@ -4,8 +4,8 @@ import android.graphics.Color;
 import android.os.Handler;
 
 import com.nu.art.belog.BeLogged;
-import com.nu.art.belog.BeLoggedClient;
-import com.nu.art.belog.FileLoggerClient;
+import com.nu.art.belog.LoggerClient;
+import com.nu.art.belog.loggers.FileLogger;
 import com.nu.art.belog.consts.LogLevel;
 import com.nu.art.core.generics.Processor;
 import com.nu.art.core.interfaces.Condition;
@@ -42,7 +42,7 @@ public class Module_LogcatViewer
 
 	private CustomPreference<LogcatTheme> themes;
 	private FloatPreference textSize;
-	private FileLoggerClient fileLoggerClient;
+	private FileLogger fileLogger;
 	private Set<LogcatSource> sources = new HashSet<>();
 
 	private LogcatViewerFilter filter = new LogcatViewerFilter();
@@ -55,10 +55,10 @@ public class Module_LogcatViewer
 		themes = new CustomPreference<>("themes", LogcatTheme.class, new LogcatTheme());
 		textSize = new FloatPreference("text-size", 6f);
 		handler = getModule(ThreadsModule.class).getDefaultHandler("log reader");
-		BeLoggedClient[] clients = BeLogged.getInstance().getClients();
-		for (BeLoggedClient client : clients) {
-			if (client instanceof FileLoggerClient) {
-				fileLoggerClient = (FileLoggerClient) client;
+		LoggerClient[] clients = BeLogged.getInstance().getClients();
+		for (LoggerClient client : clients) {
+			if (client instanceof FileLogger) {
+				fileLogger = (FileLogger) client;
 				break;
 			}
 		}
@@ -66,10 +66,10 @@ public class Module_LogcatViewer
 	}
 
 	public LogcatSource[] getAvailableSources() {
-		if (fileLoggerClient == null)
+		if (fileLogger == null)
 			return ArrayTools.asArray(sources, LogcatSource.class);
 
-		File[] allLogFiles = fileLoggerClient.getAllLogFiles();
+		File[] allLogFiles = fileLogger.getAllLogFiles();
 		for (File logFile : allLogFiles) {
 			if (logFile.getName().endsWith("zip")) {
 				File tempFile = new File(getApplicationContext().getCacheDir(), logFile.getName().replace(".zip", "-temp.txt"));

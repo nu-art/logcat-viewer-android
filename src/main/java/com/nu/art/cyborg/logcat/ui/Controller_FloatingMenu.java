@@ -13,6 +13,7 @@ import com.nu.art.cyborg.core.CyborgController;
 import com.nu.art.cyborg.logcat.LogcatSource;
 import com.nu.art.cyborg.logcat.Module_LogcatViewer;
 import com.nu.art.cyborg.logcat.R;
+import com.nu.art.cyborg.logcat.interfaces.OnLogSourceChangedListener;
 import com.nu.art.cyborg.logcat.interfaces.OnMenuItemClickedListener;
 import com.nu.art.cyborg.logcat.sources.Logcat_ArchivedLogFile;
 import com.nu.art.cyborg.logcat.sources.Logcat_LiveSystemLogs;
@@ -26,7 +27,7 @@ import com.nu.art.cyborg.logcat.ui.Controller_SelectionDialog.DialogModel;
 @SuppressWarnings("unchecked")
 public class Controller_FloatingMenu
 	extends CyborgController
-	implements OnClickListener, OnLongClickListener, OnMenuItemClickedListener {
+	implements OnClickListener, OnLongClickListener, OnMenuItemClickedListener, OnLogSourceChangedListener {
 
 	private Module_LogcatViewer module;
 	private Controller_SelectionDialog dialog;
@@ -301,6 +302,11 @@ public class Controller_FloatingMenu
 		};
 
 		showSelectionDialog(model);
+	}
+
+	@Override
+	public void onLogcatSourceChanged() {
+		getActivity().onBackPressed();
 	}
 }
 

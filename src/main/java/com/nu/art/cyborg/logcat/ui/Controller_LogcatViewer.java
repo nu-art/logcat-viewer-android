@@ -1,10 +1,14 @@
 package com.nu.art.cyborg.logcat.ui;
 
 import com.nu.art.core.interfaces.Getter;
+import com.nu.art.core.utils.DebugFlags;
+import com.nu.art.core.utils.DebugFlags.DebugFlag;
 import com.nu.art.cyborg.core.CyborgAdapter;
 import com.nu.art.cyborg.core.CyborgAdapter.CyborgRecyclerAdapter;
 import com.nu.art.cyborg.core.CyborgController;
 import com.nu.art.cyborg.core.CyborgRecycler;
+import com.nu.art.cyborg.core.CyborgStackController;
+import com.nu.art.cyborg.core.abs._DebugFlags;
 import com.nu.art.cyborg.core.dataModels.DataModel;
 import com.nu.art.cyborg.core.dataModels.ListDataModel;
 import com.nu.art.cyborg.logcat.LogcatEntry;
@@ -25,6 +29,14 @@ public class Controller_LogcatViewer
 	extends CyborgController
 	implements OnLogUpdatedListener, OnMenuItemClickedListener, OnLogSourceChangedListener {
 
+	private DebugFlags.DebugFlag[] flags = {
+		CyborgStackController.DebugFlag,
+		CyborgController.DebugFlag,
+		_DebugFlags.Debug_Performance
+	};
+
+	private boolean[] state = new boolean[flags.length];
+
 	private LogItemsResolver resolver;
 	@SuppressWarnings("unused")
 	private Module_LogcatViewer module;
@@ -41,6 +53,11 @@ public class Controller_LogcatViewer
 
 	@Override
 	protected void onCreate() {
+		for (int i = 0; i < flags.length; i++) {
+			state[i] = flags[i].isEnabled();
+			flags[i].disable();
+		}
+
 		CyborgAdapter<LogcatEntry> adapter = new CyborgAdapter<>(this, Renderer_LogcatEntry.class);
 		adapter.setResolver(resolver = new LogItemsResolver());
 		logcatRecycler.setAdapter(adapter);
@@ -60,6 +77,13 @@ public class Controller_LogcatViewer
 	protected void onPause() {
 		super.onPause();
 		module.setLogUpdateListener(null);
+	}
+
+	@Override
+	protected void onDestroy() {
+		for (int i = 0; i < flags.length; i++) {
+			flags[i].enable(state[i]);
+		}
 	}
 
 	@Override
