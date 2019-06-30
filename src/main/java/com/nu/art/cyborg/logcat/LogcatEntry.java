@@ -18,7 +18,7 @@ public class LogcatEntry {
 	}
 
 	private void setTagAndThread() {
-		String[] groups = analyzer.findRegex(1, logMessage, 1, 2, 3);
+		String[] groups = analyzer.findRegex(0, logMessage, 1, 2, 3);
 		if (groups.length == 0)
 			return;
 
