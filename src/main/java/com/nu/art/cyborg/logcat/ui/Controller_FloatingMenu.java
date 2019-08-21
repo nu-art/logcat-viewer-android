@@ -237,7 +237,7 @@ public class Controller_FloatingMenu
 					dialog.setModel(model);
 				}
 			})
-			.build();
+			.push();
 		hideButtons();
 	}
 
